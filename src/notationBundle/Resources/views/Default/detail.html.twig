@@ -1,0 +1,9 @@
+{%  extends  'base.html.twig'%}
+
+{% block title %}Gestion des sessions {% endblock %}
+{% block main %}
+    {{ form(formsession)}}
+    <p>Les sessions</p>
+
+    par {{ session.enseignant ? session.enseignant.nom : "inconnu" }}
+{% endblock %}
