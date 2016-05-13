@@ -9,7 +9,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
-
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 
@@ -25,7 +25,7 @@ class ApiController extends Controller
 
 
     /**
-     * @Route("/api/session",name="session_ajout")
+     * @Route("/api/session",name="api_session_ajout")
      */
     public function sessionAction(Request $request)
     {
@@ -62,7 +62,8 @@ class ApiController extends Controller
 
     /**
      *
-     * @Route("/api/session/{id}/detail", name="session_detail")
+     * @Route("/api/session/{id}", name="api_session_detail")
+     * @Method({"GET"})
      * @paramConverter("session",class="notationBundle:Session")
      */
     public function detailSessionAction(Request $request,Session $session){
@@ -79,7 +80,7 @@ class ApiController extends Controller
 
 
     /**
-     * @Route("/api/personne/ajout",name="personne_ajout")
+     * @Route("/api/personne/ajout",name="api_personne_ajout")
      */
     public function ajoutAction(Request $request)
     {
@@ -115,21 +116,21 @@ class ApiController extends Controller
             ));
     }
     /**
-     * @Route("/api/personne/affiche/{id}",name="personne_affiche")
+     * @Route("/api/personne/affiche/{id}",name="api_personne_affiche")
+     * @Method({"GET"})
      */
     public function afficheAction(Request $request, $id)
     {
-        //create a json file, YEEAAAH !!!
+        $em= $this->getDoctrine()->getManager();
+        $personne = $em->getRepository('notationBundle:Person')->find($id);
 
-          $value = json_encode($request,$id);
-        
-            var_dump($id);
-        return $this->render(
-            'notationBundle:Api:affiche.html.twig',
-            array(
-                $value
-            )
-        );
+        $value = json_encode($personne);
+        dump(json_last_error());
+        dump($personne);
+        dump($value);
+
+
+
 
     }
 
