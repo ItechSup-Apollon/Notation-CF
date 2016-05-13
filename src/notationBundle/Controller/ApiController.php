@@ -12,7 +12,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
-
 class ApiController extends Controller
 {
     /**
@@ -68,14 +67,15 @@ class ApiController extends Controller
      */
     public function detailSessionAction(Request $request,Session $session){
 
-        $formSession = $this->createFormBuilder($session)
-            ->getForm();
+        $em= $this->getDoctrine()->getManager();
+        $session = $em->getRepository('notationBundle:Session')->find($session);
 
-        return $this->render('notationBundle:Api:detail.html.twig',array(
-            'formsession' => $formSession -> createView(),
-            'session' => $session,
-        ));
-            
+
+        $value = json_encode($session);
+        dump(json_last_error());
+        dump($session);
+        dump($value);
+
     }
 
 
@@ -123,11 +123,49 @@ class ApiController extends Controller
     {
         $em= $this->getDoctrine()->getManager();
         $personne = $em->getRepository('notationBundle:Person')->find($id);
+        $personne->getSession();
 
-        $value = json_encode($personne);
-        dump(json_last_error());
-        dump($personne);
-        dump($value);
+
+
+        $t='{';
+        $t= $t.'"id":"'.$personne->getId().'",';
+        $t= $t.'"nom":"'.$personne->getNom().'",';
+        $t= $t.'"prenom":"'.$personne->getPrenom().'",';
+
+        $t= $t.'"session":[';
+        foreach($personne->getSession() as $session){
+            $t= $t.'"/api/session/'.$session->getId().'",';
+        }
+        $t = substr($t,0,-1);
+        $t =$t."]";
+
+        $t= $t."}";
+
+        dump($t);
+
+        $toto = new \StdClass();
+        $toto->id = $personne->getId();
+        $toto->nom = $personne->getNom();
+        $toto->prenom = $personne->getPrenom();
+
+        $u = '[';
+        foreach($personne->getSession() as $session){
+            $u= $u.'"/api/session/'.$session->getId().'",';
+            dump($u);
+        }
+        $u = substr($u,0,-1);
+        $u =$u."]";
+
+
+
+        dump($u);
+        $toto->session= $u;
+        dump($toto);
+
+
+        dump(json_encode($toto));
+        dump(json_last_error_msg());
+
 
 
 
